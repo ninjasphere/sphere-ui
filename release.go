@@ -4,15 +4,15 @@ package main
 
 import (
 	"github.com/bugsnag/bugsnag-go"
-	"github.com/juju/loggo"
-	"github.com/ninjasphere/go-ninja/logger"
+)
+
+var (
+	BugsnagKey = "" // set by build procedure
 )
 
 func init() {
-	logger.GetLogger("").SetLogLevel(loggo.INFO)
-
 	bugsnag.Configure(bugsnag.Configuration{
-		APIKey:       "e1fde71a8771f02ca9ecdaea2d12db12",
+		APIKey:       BugsnagKey,
 		ReleaseStage: "production",
 	})
 }
