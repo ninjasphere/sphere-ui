@@ -46,6 +46,7 @@ MqttWebSocket.prototype.request = function(topic, method, payload, cb) {
 };
 
 MqttWebSocket.prototype.publish = function(topic, payload) {
+  console.log('Publishing', topic, payload)
   this.socket.send(JSON.stringify({command:"publish", topic:topic, payload:JSON.stringify(payload)}));
 };
 
@@ -72,7 +73,9 @@ MqttWebSocket.prototype.subscribe = function(topic, cb) {
   return s;
 };
 
-var mqtt = new MqttWebSocket('localhost', 9001, function() {
+var mqtt = new MqttWebSocket(window.location.hostname, 9001, function() {
+
+  $('#menu').show();
 
   /*s = mqtt.subscribe('node/:serial/module/:module/state/connected', function(topic, payload, params) {
     console.log('incoming2', topic, payload, params, this)
@@ -84,7 +87,10 @@ var mqtt = new MqttWebSocket('localhost', 9001, function() {
 
   //setTimeout(s.cancel.bind(s), 10000)
 
+  var currentTopic;
+
   function configure(topic, action, data) {
+    currentTopic = topic;
     mqtt.request(topic, 'configure', {action: action, data: data}, function(err, payload) {
       console.log("Configure reply", err, payload);
 
@@ -94,21 +100,8 @@ var mqtt = new MqttWebSocket('localhost', 9001, function() {
 
       window.scrollTo(0,0);
 
-      $('#out').html(C.screen(payload)).find('form').submit(function(e) {
-        e.preventDefault();
-
-        setTimeout(function() {
-
-          var data = $(this).serializeObject();
-          var action = data.action;
-          delete(data.action);
-
-          console.log('sending data', data)
-
-          configure(topic, action, data)
-        }.bind(this), 0);
-
-      });
+      $('#menu').hide()
+      $('#out').html(C.screen(payload));
 
     })
   }
@@ -117,6 +110,29 @@ var mqtt = new MqttWebSocket('localhost', 9001, function() {
     $(document).on('click', 'a[data-configure]', function(e) {
       e.preventDefault();
       configure($(this).data('configure'))
+    });
+
+    $(document).on('submit', 'form', function(e) {
+
+      console.log('onsubmit')
+
+      e.preventDefault();
+
+      setTimeout(function() {
+
+        var data = $(this).serializeObject();
+        var action = data.action || "";
+        delete(data.action);
+
+        if (action == 'close') {
+          return;
+        }
+
+        console.log('sending data', data)
+
+        configure(currentTopic, action, data)
+      }.bind(this), 0);
+
     });
   })
 

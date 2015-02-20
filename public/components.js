@@ -2,6 +2,24 @@ var C = {};
 
 $(function() {
 
+  /*//uses document because document will be topmost level in bubbling
+  $(document).on('touchmove',function(e){
+    e.preventDefault();
+  });
+  //uses body because jquery on events are called off of the element they are
+  //added to, so bubbling would not work if we used document instead.
+  $('body').on('touchstart','.scrollable',function(e) {
+    if (e.currentTarget.scrollTop === 0) {
+      e.currentTarget.scrollTop = 1;
+    } else if (e.currentTarget.scrollHeight === e.currentTarget.scrollTop + e.currentTarget.offsetHeight) {
+      e.currentTarget.scrollTop -= 1;
+    }
+  });
+  //prevents preventDefault from being called on document if it sees a scrollable div
+  $('body').on('touchmove','.scrollable',function(e) {
+    e.stopPropagation();
+  });*/
+
   $('script[type="text/html"]').each(function(_, s){
     C[$(s).attr('id')] = function(cfg) {
       return $(s).render({cfg:cfg});
@@ -13,7 +31,7 @@ $(function() {
   })
 
   // optionGroup
-  $(document).on('click', '.type-optionGroup .option', function(e) {
+  $(document).on('tap', '.type-optionGroup .option', function(e) {
     e.preventDefault();
     var opt = $(e.currentTarget);
     var input = opt.find('input')[0];
@@ -23,15 +41,17 @@ $(function() {
   });
 
   // inputTimeRange
-  $(document).on('click', '.type-inputTimeRange a', function(e) {
+  $(document).on('tap', '.type-inputTimeRange a', function(e) {
     e.preventDefault();
     var a = $(e.currentTarget).addClass('btn-primary').removeClass('btn-default');
     a.parents('.type-inputTimeRange').find('a').not(a).removeClass('btn-primary').addClass('btn-default');
     a.parents('.type-inputTimeRange').find('.row').toggle(!a.hasClass('always')).toggleClass('ignore', a.hasClass('always'));
   });
 
-  $(document).on('submit', 'form', function(e){
-    var btn = $(this).find("button:focus" );
+  $(document).on('tap', 'form button', function(e){
+    var btn = $(this);
+
+    console.log("button", btn)
 
     if (!btn.length) {
       // Submitted some other way (like the enter button...) ignore
@@ -39,16 +59,21 @@ $(function() {
       return
     }
 
-    $(this).append('<input type="hidden" name="' + btn.attr('name') + '" value="' + btn.val() + '"/>')
+    btn.html('<i class="fa fa-circle-o-notch fa-spin"/>&nbsp;')
+
+    var form = btn.parents('form');
+
+    form.append('<input type="hidden" name="' + btn.attr('name') + '" value="' + btn.val() + '"/>')
 
     var action = btn.data('action');
 
     if (action == 'close') {
-      e.preventDefault();
-      alert('[closing window]')
-    } else {
-      $(this).find('[name=action]').val(action);
+      $('#menu').show()
+      $('#out').empty()
     }
+
+    form.find('[name=action]').val(action);
+    form.submit()
 
   });
 
