@@ -1,0 +1,6 @@
+service=sphere-ui
+
+if test $(ps -ef | grep -v grep | grep $service | wc -l) -gt 0; then
+	service $service stop
+	service $service start
+fi
