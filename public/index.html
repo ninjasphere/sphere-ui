@@ -101,6 +101,8 @@
           {for section in cfg.sections}
             ${C.section(section)}
           {/for}
+
+          <hr/>
         {/if}
 
         <div class="btn-group btn-group-justified">
@@ -129,9 +131,6 @@
           <div class="form-group type-${content.type}">
             ${C[content.type](content)}
           </div>
-          {if content_index < cfg.contents.length - 1}
-            <hr/>
-          {/if}
         {else}
           Unknown content type: ${content.type}
           <pre>${JSON.stringify(content)}</pre>
@@ -154,7 +153,7 @@
   </script>
 
   <script id="optionGroup" type="text/html">
-    <label>${cfg.title} <small>${cfg.subtitle||''}</small></label>
+    {if cfg.title}<label>${cfg.title} <small>${cfg.subtitle||''}</small></label>{/if}
     {for option in cfg.options}
       <div class="list-group option">
         <input type="checkbox" name="${cfg.name}[]" value="${option.value}"{if option.selected} checked{/if}/>
@@ -163,15 +162,42 @@
     {/for}
   </script>
 
+  <script id="radioGroup" type="text/html">
+    {if cfg.title}<label>${cfg.title} <small>${cfg.subtitle||''}</small></label>{/if}
+
+    <div class="btn-group btn-group-justified">
+
+      {for option in cfg.options}
+        {var selected = option.value == cfg.value}
+        <div class="btn-group option">
+          <input class="hide" type="radio" name="${cfg.name}" value="${option.value}"{if selected} checked{/if}/>
+
+          <a class="btn {if selected} btn-primary{else} btn-default{/if}">
+            <i class="fa fa-${option.displayIcon}"></i> ${option.title}
+          </a>
+        </div>
+      {/for}
+    </div>
+
+  </script>
+
   <script id="alert" type="text/html">
     <div class="alert alert-${cfg.displayClass}" role="alert">${cfg.title} <small>${cfg.subtitle||''}</small></div>
   </script>
 
   <script id="inputText" type="text/html">
+    ${C.inputBaseBefore(cfg)}
+    <input type="${cfg.inputType == 'number'?'tel':cfg.inputType||'text'}" name="${cfg.name}" {if cfg.value}value="${cfg.value}" {/if}class="form-control" placeholder="${cfg.placeholder||''}"{if typeof cfg.minimum != 'undefined'} min="${cfg.minimum}"{/if}{if typeof cfg.maximum != 'undefined'} min="${cfg.maximum}"{/if}>
+    ${C.inputBaseAfter(cfg)}
+  </script>
+
+  <script id="inputBaseBefore" type="text/html">
     {if cfg.title}<label>${cfg.title} <small>${cfg.subtitle||''}</small></label>{/if}
     {if cfg.before || cfg.after}<div class="input-group">{/if}
       {if cfg.before}<div class="input-group-addon inputText-before">${cfg.before}</div>{/if}
-      <input type="${cfg.inputType||'text'}" name="${cfg.name}" {if cfg.value}value="${cfg.value}" {/if}class="form-control" placeholder="${cfg.placeholder||''}"{if typeof cfg.minimum != 'undefined'} min="${cfg.minimum}"{/if}{if typeof cfg.maximum != 'undefined'} min="${cfg.maximum}"{/if}>
+  </script>
+
+  <script id="inputBaseAfter" type="text/html">
       {if cfg.after}<div class="input-group-addon inputText-after">${cfg.after}</div>{/if}
     {if cfg.before || cfg.after}</div>{/if}
   </script>
@@ -223,6 +249,34 @@
         </label>
       </div>
     </div>
+  </script>
+
+  <script id="separator" type="text/html">
+    <hr/>
+  </script>
+
+  <script id="inputTime" type="text/html">
+
+    {eval}
+      function pad(a,b){return(1e15+a+"").slice(-b)}
+
+      // Errgh global.
+      times = ['dawn', 'sunrise', 'sunset', 'dusk']
+
+      for (var h = 0; h < 24; h++) {
+        for (var m = 0; m < 60; m += 15) {
+          times.push(pad(h, 2) + ':' + pad(m, 2));
+        }
+      }
+    {/eval}
+
+    ${C.inputBaseBefore(cfg)}
+    <select class="form-control" name="${cfg.name}">
+      {for time in times}
+        <option{if time == cfg.value} selected{/if}>${time}</option>
+      {/for}
+    </select>
+    ${C.inputBaseAfter(cfg)}
   </script>
 
   <div id="menu">

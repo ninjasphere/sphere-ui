@@ -40,6 +40,16 @@ $(function() {
     opt.find('i').toggleClass('fa-square-o', !input.checked).toggleClass('fa-check-square-o', input.checked);
   });
 
+  // radioGroup
+  $(document).on('tap', '.type-radioGroup .option', function(e) {
+    e.preventDefault();
+    var opt = $(e.currentTarget);
+    var input = opt.find('input')[0];
+    input.checked = true;
+    opt.parents('.type-radioGroup').find('.btn-primary').removeClass('btn-primary').addClass('btn-default');
+    opt.find('a').removeClass('btn-default').addClass('btn-primary');
+  });
+
   // inputTimeRange
   $(document).on('tap', '.type-inputTimeRange a', function(e) {
     e.preventDefault();
@@ -63,10 +73,12 @@ $(function() {
 
     var form = btn.parents('form');
 
-    form.append('<input type="hidden" name="' + btn.attr('name') + '" value="' + btn.val() + '"/>')
+    if (btn.attr('name')) {
+      form.append('<input type="hidden" name="' + btn.attr('name') + '" value="' + btn.val() + '"/>')
+    }
 
     var action = btn.data('action');
-
+    
     if (action == 'close') {
       $('#menu').show()
       $('#out').empty()

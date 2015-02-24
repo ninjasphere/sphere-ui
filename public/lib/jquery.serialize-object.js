@@ -92,7 +92,8 @@
         case "checkbox":
           return pair.value === "on" ? true : pair.value;
         case "number":
-          return parseInt(pair.value);
+        case "tel":
+          return parseInt(pair.value.replace(/\D/g,''));
         default:
           return pair.value;
       }
