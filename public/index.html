@@ -116,11 +116,11 @@
         <div class="btn-group btn-group-justified">
           {for action in cfg.actions}
             {if action.type == 'reply'}
-              <div class="btn-group"><button data-action="${action.name}" class="btn btn-${action.displayClass}"><i class="fa fa-${action.displayIcon}"></i> ${action.label}</button></div>
+              <div class="btn-group"><button type="button" data-action="${action.name}" class="btn btn-${action.displayClass}"><i class="fa fa-${action.displayIcon}"></i> ${action.label}</button></div>
             {elseif action.type == 'close'}
-              <div class="btn-group"><button data-action="close" class="btn btn-default">${action.label}</button></div>
+              <div class="btn-group"><button type="button" data-action="close" class="btn btn-default">${action.label}</button></div>
             {else}
-              <div class="btn-group"><button>UNKNOWN ACTION TYPE: ${action.type}</button></div>
+              <div class="btn-group"><button type="button">UNKNOWN ACTION TYPE: ${action.type}</button></div>
             {/if}
           {/for}
         </div>
