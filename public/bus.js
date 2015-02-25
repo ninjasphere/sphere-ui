@@ -2,7 +2,10 @@ function MqttWebSocket(host, port, cb) {
   this.host = host;
   this.port = port;
 
-  this.socket = new WebSocket('ws://' + this.host + ':' + this.port);
+  this.socket = new ReconnectingWebSocket('ws://' + this.host + ':' + this.port);
+  this.socket.debug = true;
+  this.socket.reconnectInterval = 100;
+  this.socket.maxReconnectInterval = 400;
 
   this.subscriptions = [];
   this.pending = [];
@@ -28,7 +31,14 @@ function MqttWebSocket(host, port, cb) {
 
   }.bind(this);
 
-  this.socket.onopen = cb;
+  var done = false;
+  this.socket.onopen = function() {
+    if (!done) {
+      done = true;
+      cb();
+    }
+  };
+
 };
 
 MqttWebSocket.prototype.request = function(topic, method, payload, cb) {
