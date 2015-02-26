@@ -69,6 +69,9 @@ $(function() {
       return
     }
 
+    e.stopImmediatePropagation()
+    e.preventDefault()
+
     btn.html('<i class="fa fa-circle-o-notch fa-spin"/>&nbsp;')
 
     var form = btn.parents('form');
@@ -78,7 +81,7 @@ $(function() {
     }
 
     var action = btn.data('action');
-    
+
     if (action == 'close') {
       $('#menu').show()
       $('#out').empty()
