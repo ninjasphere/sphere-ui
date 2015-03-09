@@ -70,6 +70,11 @@
     .type-optionGroup .list-group-item {
       border: none !important;
     }
+
+    .type-inputCheckbox input {
+      display: none;
+    }
+
   </style>
 
 
@@ -197,6 +202,13 @@
     ${C.inputBaseBefore(cfg)}
     <input type="${cfg.inputType == 'number'?'tel':cfg.inputType||'text'}" name="${cfg.name}" {if cfg.value}value="${cfg.value}" {/if}class="form-control" placeholder="${cfg.placeholder||''}"{if typeof cfg.minimum != 'undefined'} min="${cfg.minimum}"{/if}{if typeof cfg.maximum != 'undefined'} min="${cfg.maximum}"{/if}>
     ${C.inputBaseAfter(cfg)}
+  </script>
+
+  <script id="inputCheckbox" type="text/html">
+    <div class="list-group">
+      <input type="checkbox" name="${cfg.name}" {if cfg.value}value="${cfg.value}"{/if} {if cfg.selected} checked{/if}class="form-control"/>
+          <a href="#" class="list-group-item{if cfg.selected} active{/if}"><i class="fa fa{if cfg.selected}-check{/if}-square-o"></i> ${cfg.title}<small>${cfg.subtitle||''}</small></a>
+    </div>
   </script>
 
   <script id="inputBaseBefore" type="text/html">

@@ -31,7 +31,7 @@ $(function() {
   })
 
   // optionGroup
-  $(document).on('tap', '.type-optionGroup .option', function(e) {
+  $(document).on('tap', '.type-optionGroup .option, .type-inputCheckbox', function(e) {
     e.preventDefault();
     var opt = $(e.currentTarget);
     var input = opt.find('input')[0];
