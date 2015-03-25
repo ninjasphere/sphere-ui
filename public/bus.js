@@ -135,7 +135,14 @@ var mqtt = new MqttWebSocket('elliotsphere2.local', 9001, function() {
 
   var currentTopic;
 
+  var autoTimeouts = [];
+
   function configure(topic, action, data) {
+
+    while (timeout = autoTimeouts.pop()) {
+      clearTimeout(timeout);
+    }
+
     currentTopic = topic;
     mqtt.request(topic, 'configure', {action: action, data: data}, function(err, payload) {
 
@@ -147,6 +154,17 @@ var mqtt = new MqttWebSocket('elliotsphere2.local', 9001, function() {
 
       $('#menu').hide()
       $('#out').html(C.screen(payload));
+
+      $('.autoAction').each(function(i, el) {
+
+        var btn = $(el).find('button');
+        autoTimeouts.push(setTimeout(function() {
+          if (!$('#menu').is(':visible')) {
+            console.log('Automatically submitting action', btn.data('action'))
+            btn.tap();
+          }
+        }, btn.data('delay')));
+      });
 
     })
   }

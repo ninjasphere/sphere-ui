@@ -130,6 +130,14 @@
               <div class="btn-group"><button type="button" data-action="${action.name}" class="btn btn-${action.displayClass}"><i class="fa fa-${action.displayIcon}"></i> ${action.label}</button></div>
             {elseif action.type == 'close'}
               <div class="btn-group"><button type="button" data-action="close" class="btn btn-default">${action.label}</button></div>
+            {elseif action.type == 'auto'}
+              {eval}
+                if (!action.delay || action.delay < 500) {
+                  action.delay = 500;
+                }
+              {/eval}
+
+              <div class="hidden autoAction"><button type="button" data-action="${action.name}" data-delay="${action.delay}"></button></div>
             {else}
               <div class="btn-group"><button type="button">UNKNOWN ACTION TYPE: ${action.type}</button></div>
             {/if}
