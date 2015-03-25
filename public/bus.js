@@ -84,7 +84,7 @@ MqttWebSocket.prototype.subscribe = function(topic, cb) {
   return s;
 };
 
-var mqtt = new MqttWebSocket(window.location.hostname, 9001, function() {
+var mqtt = new MqttWebSocket('elliotsphere2.local', 9001, function() {
 
   $('#menu').show();
 
