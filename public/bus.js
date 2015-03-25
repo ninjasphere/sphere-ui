@@ -47,8 +47,9 @@ MqttWebSocket.prototype.request = function(topic, method, payload, cb) {
   this.subscribe(topic + '/reply', function(topic, payload, params) {
     payload = JSON.parse(payload);
     if (payload.id == id) {
-      this.cancel();
-      cb(payload.error, payload.result);
+      if (!cb(payload.error, payload.result)) {
+        this.cancel();
+      }
     }
   });
 
@@ -97,12 +98,42 @@ var mqtt = new MqttWebSocket(window.location.hostname, 9001, function() {
 
   //setTimeout(s.cancel.bind(s), 10000)
 
+
+  mqtt.request('$discover', 'services', '/protocol/configuration', function(err, services) {
+    console.log('Discovery response', err, services)
+
+    if (err || !services || !services.length) {
+      console.error('Failed to get configuration services. services:', services, 'error:', err)
+      return
+    }
+
+    services.forEach(function(service) {
+      mqtt.request(service.topic, 'getActions', null, function(err, actions) {
+
+        if (err) {
+          return console.error('Failed to get configuration actions for service', service, err);
+        }
+
+        console.log('Got config actions', actions, 'for service', service);
+
+        actions.forEach(function(action) {
+          action.topic = service.topic;
+
+          console.log("action", action, ""+C.serviceAction(action))
+          $('#menu .actions').append(C.serviceAction(action));
+        })
+
+      });
+    })
+
+    return true;
+  })
+
   var currentTopic;
 
   function configure(topic, action, data) {
     currentTopic = topic;
     mqtt.request(topic, 'configure', {action: action, data: data}, function(err, payload) {
-      console.log("Configure reply", err, payload);
 
       if (err) {
         return alert("Error: " + err.message);
@@ -119,7 +150,7 @@ var mqtt = new MqttWebSocket(window.location.hostname, 9001, function() {
   $(function() {
     $(document).on('click', 'a[data-configure]', function(e) {
       e.preventDefault();
-      configure($(this).data('configure'))
+      configure($(this).data('configure'), $(this).data('action'))
     });
 
     $(document).on('submit', 'form', function(e) {

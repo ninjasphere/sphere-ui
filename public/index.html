@@ -77,6 +77,12 @@
 
   </style>
 
+  <script id="serviceAction" type="text/html">
+    <div class="row">
+      <a href="#" class="btn btn-${cfg.displayClass||'info'} col-xs-12" data-configure="${cfg.topic}" data-action="${cfg.name||''}"><i class="fa fa-${cfg.displayIcon}"></i> ${cfg.label}</a>
+    </div>
+  </script>
+
 
   <script id="notification" type="text/html">
     <div class="modal show">
@@ -305,16 +311,7 @@
       <h1>Ninja Sphere <small>Configuration</small></h1>
 
       <div class="well items">
-        <fieldset>
-          <div class="row">
-            <a href="#" class="btn btn-info col-xs-12" data-configure="$app/com.ninjablocks.scheduler/configure"><i class="fa fa-clock-o"></i> Scheduler</a>
-          </div>
-          <div class="row">
-            <a href="#" class="btn btn-info col-xs-12" data-configure="$app/com.ninjablocks.securitylight/configure"><i class="fa fa-lightbulb-o"></i> Security Lights</a>
-          </div>
-          <div class="row">
-            <a href="#" class="btn btn-info col-xs-12" data-configure="$driver/com.ninjablocks.samsung.tv/configure">Samsung TVs</a>
-          </div>
+        <fieldset class="actions">
         </fieldset>
       </div>
     </div>

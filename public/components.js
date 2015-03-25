@@ -83,8 +83,9 @@ $(function() {
     var action = btn.data('action');
 
     if (action == 'close') {
-      $('#menu').show()
-      $('#out').empty()
+      $('#menu').show();
+      $('#out').empty();
+      return
     }
 
     form.find('[name=action]').val(action);
