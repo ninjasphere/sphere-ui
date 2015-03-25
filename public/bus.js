@@ -98,13 +98,14 @@ var mqtt = new MqttWebSocket('elliotsphere2.local', 9001, function() {
 
   //setTimeout(s.cancel.bind(s), 10000)
 
+  var seenActions = {};
 
   mqtt.request('$discover', 'services', '/protocol/configuration', function(err, services) {
     console.log('Discovery response', err, services)
 
     if (err || !services || !services.length) {
       console.error('Failed to get configuration services. services:', services, 'error:', err)
-      return
+      return true
     }
 
     services.forEach(function(service) {
@@ -119,8 +120,11 @@ var mqtt = new MqttWebSocket('elliotsphere2.local', 9001, function() {
         actions.forEach(function(action) {
           action.topic = service.topic;
 
-          console.log("action", action, ""+C.serviceAction(action))
-          $('#menu .actions').append(C.serviceAction(action));
+          var id = action.topic + action.name;
+          if (!seenActions[id]) {
+            seenActions[id] = true;
+            $('#menu .actions').append(C.serviceAction(action));
+          }
         })
 
       });
