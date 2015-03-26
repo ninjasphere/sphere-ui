@@ -209,7 +209,7 @@
   </script>
 
   <script id="alert" type="text/html">
-    <div class="alert alert-${cfg.displayClass}" role="alert">${cfg.title} <small>${cfg.subtitle||''}</small></div>
+    <div class="alert alert-${cfg.displayClass}" role="alert">{if cfg.displayIcon}<i class="fa fa-${cfg.displayIcon}"></i>{/if} ${cfg.title} <small>${cfg.subtitle||''}</small></div>
   </script>
 
   <script id="inputText" type="text/html">
