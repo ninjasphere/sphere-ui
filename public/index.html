@@ -215,6 +215,14 @@
     ${C.inputBaseAfter(cfg)}
   </script>
 
+  <script id="staticText" type="text/html">
+    ${C.inputBaseBefore(cfg)}
+    <div class="static-text">
+    {if cfg.value}${cfg.value}{/if}
+    </div>
+    ${C.inputBaseAfter(cfg)}
+  </script>
+
   <script id="inputBaseBefore" type="text/html">
     {if cfg.title}<label>${cfg.title} <small>${cfg.subtitle||''}</small></label>{/if}
     {if cfg.before || cfg.after}<div class="input-group">{/if}
