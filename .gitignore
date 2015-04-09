@@ -1,0 +1,5 @@
+.gopath/
+sphere-ui
+bin/sphere-ui
+*~
+*.bak
