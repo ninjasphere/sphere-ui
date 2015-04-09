@@ -168,7 +168,7 @@
   <script id="actionList" type="text/html">
     {for option in cfg.options}
       <div class="action">
-        <button  type="button" data-action="${cfg.primaryAction.name}" name="${cfg.name}" value="${option.value}" class="{if cfg.secondaryAction}col-xs-8{else}col-xs-12{/if} btn btn-primary primary"><i class="fa fa-${cfg.primaryAction.displayIcon}"></i> ${option.title}<small>${option.subtitle||''}</small></button>
+        <button  type="button" {if cfg.primaryAction}data-action="${cfg.primaryAction.name}"{/if} name="${cfg.name}" value="${option.value}" class="{if cfg.secondaryAction}col-xs-8{else}col-xs-12{/if} btn btn-primary primary">{if cfg.primaryAction && cfg.primaryAction.displayIcon}<i class="fa fa-${cfg.primaryAction.displayIcon}"></i>{/if} ${option.title}<small>${option.subtitle||''}</small></button>
         {if cfg.secondaryAction}
           <button  type="button" data-action="${cfg.secondaryAction.name}"  name="${cfg.name}" value="${option.value}" class="col-xs-4 btn btn-${cfg.secondaryAction.displayClass} secondary"><i class="fa fa-${cfg.secondaryAction.displayIcon}"></i> ${cfg.secondaryAction.label}</button>
         {/if}
