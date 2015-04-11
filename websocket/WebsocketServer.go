@@ -36,7 +36,12 @@ func (s *WebsocketServer) PostConstruct() error {
 		return fmt.Errorf("illegal state: Port < 0")
 	}
 	s.log = logger.GetLogger("WebsocketServer")
-	return s.Listen()
+	go func() {
+		if err := s.Listen(); err != nil {
+			s.log.FatalErrorf(err, "websocket server failed")
+		}
+	}()
+	return nil
 }
 
 func (s *WebsocketServer) Listen() error {
