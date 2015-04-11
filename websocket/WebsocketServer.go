@@ -45,7 +45,9 @@ func (s *WebsocketServer) PostConstruct() error {
 }
 
 func (s *WebsocketServer) Listen() error {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	handler := http.NewServeMux()
+
+	handler.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
 		s.log.Debugf("Websocket incoming connection")
 
@@ -162,5 +164,5 @@ func (s *WebsocketServer) Listen() error {
 
 	s.log.Infof("Listening at %s", listenAddress)
 
-	return http.ListenAndServe(listenAddress, nil)
+	return http.ListenAndServe(listenAddress, handler)
 }
