@@ -137,6 +137,9 @@ var mqtt = new MqttWebSocket(location.hostname, 9001, function() {
 
   var autoTimeouts = [];
 
+
+  var keepScrollPoint = false;
+
   function configure(topic, action, data) {
 
     while (timeout = autoTimeouts.pop()) {
@@ -144,29 +147,42 @@ var mqtt = new MqttWebSocket(location.hostname, 9001, function() {
     }
 
     currentTopic = topic;
+
     mqtt.request(topic, 'configure', {action: action, data: data}, function(err, payload) {
 
       if (err) {
-        return alert("Error: " + err.message);
+        return alert('Error: ' + err.message);
       }
 
-      window.scrollTo(0,0);
+      if (!keepScrollPoint) {
+        window.scrollTo(0, 0);
+      }
 
-      $('#menu').hide()
+      var lastScrollPoint = $(window).scrollTop();
+
+      $('#menu').hide();
       $('#out').html(C.screen(payload));
+
+      if (keepScrollPoint) {
+        keepScrollPoint = false;
+        $(window).scrollTop(lastScrollPoint);
+      }
 
       $('.autoAction').each(function(i, el) {
 
         var btn = $(el).find('button');
         autoTimeouts.push(setTimeout(function() {
           if (!$('#menu').is(':visible')) {
-            console.log('Automatically submitting action', btn.data('action'))
+
+            keepScrollPoint = true;
+
+            console.log('Automatically submitting action', btn.data('action'));
             btn.tap();
           }
         }, btn.data('delay')));
       });
 
-    })
+    });
   }
 
   $(function() {
