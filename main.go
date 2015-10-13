@@ -15,8 +15,9 @@ var log *logger.Logger
 func main() {
 
 	log = logger.GetLogger("sphere-ui")
-	fs := http.FileServer(http.Dir("public"))
-	http.Handle("/", fs)
+
+	http.Handle("/config/", http.RedirectHandler("/", 307))
+	http.Handle("/", http.FileServer(http.Dir("public")))
 
 	address := fmt.Sprintf(":%d", config.Int(80, "sphere-ui.port"))
 	log.Infof("Listening on %s", address)

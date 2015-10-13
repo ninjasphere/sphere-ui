@@ -44,21 +44,23 @@ function MqttWebSocket(host, port, cb) {
 MqttWebSocket.prototype.request = function(topic, method, payload, cb) {
   var id = this.requestId++;
 
+  var request = {topic: topic, method: method, params: payload, id: id, jsonrpc: '2.0'};
+
   this.subscribe(topic + '/reply', function(topic, payload, params) {
     payload = JSON.parse(payload);
     if (payload.id == id) {
-      if (!cb(payload.error, payload.result)) {
+      if (!cb(payload.error, payload.result, request)) {
         this.cancel();
       }
     }
   });
 
-  this.publish(topic, {"method": method,"params": payload, "id": id, "jsonrpc": "2.0"});
+  this.publish(request.topic, request);
 };
 
 MqttWebSocket.prototype.publish = function(topic, payload) {
-  console.log('Publishing', topic, payload)
-  this.socket.send(JSON.stringify({command:"publish", topic:topic, payload:JSON.stringify(payload)}));
+  console.log('Publishing', topic, payload);
+  this.socket.send(JSON.stringify({command:'publish', topic:topic, payload:JSON.stringify(payload)}));
 };
 
 MqttWebSocket.prototype.subscribe = function(topic, cb) {
@@ -67,13 +69,14 @@ MqttWebSocket.prototype.subscribe = function(topic, cb) {
     cb: function(cmd) {
       cb.bind(s)(cmd.topic, cmd.payload, cmd.params);
     },
+
     cancel: function() {
-      this.socket.send(JSON.stringify({command:"unsubscribe", subscription:s.id}));
+      this.socket.send(JSON.stringify({command:'unsubscribe', subscription:s.id}));
       this.subscriptions[s.id] = null;
-    }.bind(this)
+    }.bind(this),
   };
 
-  this.socket.send(JSON.stringify({command:"subscribe", payload:topic}));
+  this.socket.send(JSON.stringify({command:'subscribe', payload:topic}));
 
   this.pending.push(function(id) {
     console.log('Successfuly subscribed to topic:', topic, ' subscription id:', id);
@@ -101,11 +104,11 @@ var mqtt = new MqttWebSocket(location.hostname, 9001, function() {
   var seenActions = {};
 
   mqtt.request('$discover', 'services', '/protocol/configuration', function(err, services) {
-    console.log('Discovery response', err, services)
+    console.log('Discovery response', err, services);
 
     if (err || !services || !services.length) {
-      console.error('Failed to get configuration services. services:', services, 'error:', err)
-      return true
+      console.error('Failed to get configuration services. services:', services, 'error:', err);
+      return true;
     }
 
     services.forEach(function(service) {
@@ -125,20 +128,29 @@ var mqtt = new MqttWebSocket(location.hostname, 9001, function() {
             seenActions[id] = true;
             $('#menu .actions').append(C.serviceAction(action));
           }
-        })
+        });
 
       });
-    })
+    });
 
     return true;
-  })
+  });
 
   var currentTopic;
 
   var autoTimeouts = [];
 
+  var automaticAction = false;
 
-  var keepScrollPoint = false;
+  window.onpopstate = function(event) {
+    if (!event.state) {
+      $('#menu').show();
+      $('#out').empty();
+    } else {
+      automaticAction = true;
+      configure(event.state.topic, event.state.params.action, event.state.params.data);
+    }
+  };
 
   function configure(topic, action, data) {
 
@@ -148,13 +160,19 @@ var mqtt = new MqttWebSocket(location.hostname, 9001, function() {
 
     currentTopic = topic;
 
-    mqtt.request(topic, 'configure', {action: action, data: data}, function(err, payload) {
+    mqtt.request(topic, 'configure', {action: action, data: data}, function(err, payload, request) {
+
+      console.log('Got reply to request:', request, payload);
+
+      if (!automaticAction && payload.addToHistory) {
+        history.pushState(request, payload.title, '/config/' + slug(payload.title));
+      }
 
       if (err) {
         return alert('Error: ' + err.message);
       }
 
-      if (!keepScrollPoint) {
+      if (automaticAction) {
         window.scrollTo(0, 0);
       }
 
@@ -163,9 +181,9 @@ var mqtt = new MqttWebSocket(location.hostname, 9001, function() {
       $('#menu').hide();
       $('#out').html(C.screen(payload));
 
-      if (keepScrollPoint) {
-        keepScrollPoint = false;
+      if (automaticAction) {
         $(window).scrollTop(lastScrollPoint);
+        automaticAction = false;
       }
 
       $('.autoAction').each(function(i, el) {
@@ -173,8 +191,7 @@ var mqtt = new MqttWebSocket(location.hostname, 9001, function() {
         var btn = $(el).find('button');
         autoTimeouts.push(setTimeout(function() {
           if (!$('#menu').is(':visible')) {
-
-            keepScrollPoint = true;
+            automaticAction = true;
 
             console.log('Automatically submitting action', btn.data('action'));
             btn.tap();
@@ -216,3 +233,21 @@ var mqtt = new MqttWebSocket(location.hostname, 9001, function() {
   })
 
 });
+
+var slug = function(str) {
+  str = str.replace(/^\s+|\s+$/g, ''); // trim
+  str = str.toLowerCase();
+
+  // remove accents, swap ñ for n, etc
+  var from = "ãàáäâẽèéëêìíïîõòóöôùúüûñç·/_,:;";
+  var to   = "aaaaaeeeeeiiiiooooouuuunc------";
+  for (var i=0, l=from.length ; i<l ; i++) {
+    str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
+  }
+
+  str = str.replace(/[^a-z0-9 -]/g, '') // remove invalid chars
+    .replace(/\s+/g, '-') // collapse whitespace and replace by -
+    .replace(/-+/g, '-'); // collapse dashes
+
+  return str;
+};
