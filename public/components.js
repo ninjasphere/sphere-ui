@@ -69,32 +69,28 @@ $(function() {
       return
     }
 
-    e.stopImmediatePropagation();
-    e.preventDefault();
+    e.stopImmediatePropagation()
+    e.preventDefault()
 
-    var action = btn.data('action');
-
-    if (action == 'undefined') {
-      // No action.
-      return;
-    }
-
-    btn.html('<i class="fa fa-circle-o-notch fa-spin"/>&nbsp;');
+    btn.html('<i class="fa fa-circle-o-notch fa-spin"/>&nbsp;')
 
     var form = btn.parents('form');
 
     if (btn.attr('name')) {
-      form.append('<input type="hidden" name="' + btn.attr('name') + '" value="' + btn.val() + '"/>');
+      form.append('<input type="hidden" name="' + btn.attr('name') + '" value="' + btn.val() + '"/>')
     }
+
+    var action = btn.data('action');
 
     if (action == 'close') {
       $('#menu').show();
       $('#out').empty();
-      return;
+      return
     }
 
     form.find('[name=action]').val(action);
-    form.submit();
+    form.submit()
+
   });
 
 });
