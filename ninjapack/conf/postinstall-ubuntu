@@ -1,4 +1,2 @@
 service=sphere-ui
-stop sphere-ui || true
-start sphere-ui || true
 
