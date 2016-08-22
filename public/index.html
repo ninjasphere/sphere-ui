@@ -236,7 +236,7 @@
   </script>
 
   <script id="inputHidden" type="text/html">
-    <input type="hidden" name="${cfg.name}" value="${cfg.value||''}"/>
+    <input type="hidden" name="${cfg.name}" value="${C.escape(cfg.value||'')}"/>
   </script>
 
   <script id="inputTimeRange" type="text/html">

@@ -95,4 +95,21 @@ $(function() {
 
   });
 
+  C.escape = function(s) {
+    var out = ''
+    for (var i = 0; i < s.length; ++i) {
+      switch (s[i]) {
+        case '"':
+          out = out+"&quot;"
+          break
+        case '&':
+          out = out+"&amp;"
+          break
+        default:
+          out = out + s[i]
+      }
+    }
+    return out
+  }
+
 });
