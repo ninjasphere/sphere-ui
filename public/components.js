@@ -79,7 +79,7 @@ $(function() {
     if (btn.attr('name')) {
       form
         .append('<input type="hidden" name="' + btn.attr('name') +'"')
-        .value(btn.val())
+        .val(btn.val())
     }
 
     var action = btn.data('action');
