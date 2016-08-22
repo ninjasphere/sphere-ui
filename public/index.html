@@ -212,7 +212,7 @@
 
   <script id="inputText" type="text/html">
     ${C.inputBaseBefore(cfg)}
-    <input type="${cfg.inputType == 'number'?'tel':cfg.inputType||'text'}" name="${cfg.name}" {if cfg.value}value="${cfg.value}" {/if}class="form-control" placeholder="${cfg.placeholder||''}"{if typeof cfg.minimum != 'undefined'} min="${cfg.minimum}"{/if}{if typeof cfg.maximum != 'undefined'} min="${cfg.maximum}"{/if}>
+    <input type="${cfg.inputType == 'number'?'tel':cfg.inputType||'text'}" name="${cfg.name}" {if cfg.value}value="${C.escape(cfg.value)}" {/if}class="form-control" placeholder="${cfg.placeholder||''}"{if typeof cfg.minimum != 'undefined'} min="${cfg.minimum}"{/if}{if typeof cfg.maximum != 'undefined'} min="${cfg.maximum}"{/if}>
     ${C.inputBaseAfter(cfg)}
   </script>
 
