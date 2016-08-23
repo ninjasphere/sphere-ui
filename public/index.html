@@ -189,8 +189,9 @@
 
   <script id="radioGroup" type="text/html">
     {if cfg.title}<label>${cfg.title} <small>${cfg.subtitle||''}</small></label>{/if}
+    <br/>
 
-    <div class="btn-group btn-group-justified">
+    <div class="{if cfg.vertical}btn-group-vertical{else}btn-group btn-group-justified{/if}">
 
       {for option in cfg.options}
         {var selected = option.value == cfg.value}
