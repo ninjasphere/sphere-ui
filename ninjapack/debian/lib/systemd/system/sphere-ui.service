@@ -1,0 +1,11 @@
+[Unit]
+Description=NinjaBlocks Sphere UI Service
+After=network.target 
+
+[Service]
+ExecStart=/bin/bash -c '. /etc/profile && cd /opt/ninjablocks/sphere-ui && exec ./sphere-ui'
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
